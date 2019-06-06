@@ -1,20 +1,34 @@
-function hasUserMedia() { 
-   //check if the browser supports the WebRTC 
-   return !!(navigator.getUserMedia || navigator.webkitGetUserMedia || 
-      navigator.mozGetUserMedia); 
-} 
+/*
+ *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
 
-if (hasUserMedia()) { 
-   navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
-      || navigator.mozGetUserMedia; 
-		
-   //enabling video and audio channels 
-   navigator.getUserMedia({ video: true, audio: true }, function (stream) { 
-      var video = document.querySelector('video'); 
-		
-      //inserting our stream to the video tag     
-      video.src = window.URL.createObjectURL(stream); 
-   }, function (err) {}); 
-} else { 
-   alert("WebRTC is not supported"); 
+'use strict';
+
+// variables in global scope so available to console
+var video = document.querySelector('video');
+var constraints = {
+  audio: false,
+  video: true
+};
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+  navigator.mozGetUserMedia;
+
+function successCallback(stream) {
+  window.stream = stream; // stream available to console
+  if (window.URL) {
+    video.src = window.URL.createObjectURL(stream);
+  } else {
+    video.src = stream;
+  }
 }
+
+function errorCallback(error) {
+  console.log('navigator.getUserMedia error: ', error);
+}
+
+navigator.getUserMedia(constraints, successCallback, errorCallback);
